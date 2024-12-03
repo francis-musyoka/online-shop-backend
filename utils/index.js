@@ -7,6 +7,15 @@ exports.generateToken = (user)=>{
         const token = jwt.sign(payload,secretKey,{expiresIn: tokenExpiresIn});
 
         return token;
+};
+
+exports.generateForgotPasswordToken =(user)=>{
+        const payload = {id: user.id};
+        const secretKey = process.env.TOKEN_SECRET;
+        const tokenExpiresIn =Number(process.env.FORGOT_PASSWORD_TOKEN_EXPIRES_IN) || '10m'
+        const token = jwt.sign(payload,secretKey,{expiresIn: tokenExpiresIn});
+
+        return token;
 }
 
 exports.cookieOptions ={

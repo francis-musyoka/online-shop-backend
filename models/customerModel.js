@@ -37,6 +37,9 @@ module.exports = (Sequelize,sequelize)=>{
         },
         token:{
             type: Sequelize.STRING(1234),
+        },
+        forgotPasswordToken:{
+            type: Sequelize.STRING(1234),
         }
     });
 
