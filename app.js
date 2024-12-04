@@ -20,9 +20,9 @@ app.use(cors({
 }));
 app.use(morgan('dev'));
 
-app.use(errorHandle);
+app.use(customerRouters);
 
-app.use(customerRouters)
+app.use(errorHandle);
 
 const port = process.env.PORT|| 4000;
 

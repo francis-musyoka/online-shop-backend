@@ -164,7 +164,7 @@ exports.updatePassword = async(req,res,next)=>{
         const isCurrentPasswordValid = await bcrypt.compare(currentPassword,user.password);
             
         if(!isCurrentPasswordValid){
-            return next(new ErrorResponse('The current password is incorrect.',400));
+            return next(new ErrorResponse('The current password is incorrect.', 400));
         };
     
         if(currentPassword === password){
