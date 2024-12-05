@@ -4,9 +4,10 @@ const ErrorResponse = require('../utils/error');
 const { validatePassword } = require('../utils/validate');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
-const { generateToken,generateForgotPasswordToken,cookieOptions } = require('../utils');
+const { generateToken,cookieOptions, generateResetToken } = require('../utils');
 const jwt = require('jsonwebtoken');
 const nodemailer = require("nodemailer");
+const {sha512} = require('js-sha512');
 
 
 const {Customer} = db;
@@ -233,13 +234,7 @@ exports.forgotPassword = async(req,res,next)=>{
             return next(new ErrorResponse("Email provided does not exist", 404));
         };
         
-        //generate token
-        const token = generateForgotPasswordToken(user);
-        console.log(`TOKEN:: ${token}`);
-        
-        await user.update({forgotPasswordToken:token});
-
-        const link = `http://localhost:3000/reset-password/${token}`
+        const link = await generateResetToken(user);
 
         const transporter = nodemailer.createTransport({
             service: 'gmail',
@@ -270,7 +265,7 @@ exports.forgotPassword = async(req,res,next)=>{
                 console.log('Email sent: ' + info.response);
                 res.status(200).json({
                     success: true, 
-                    msg: "Email was sent successfully"
+                    msg: "Email was sent successfully",
                 });
             };
         });
@@ -281,35 +276,32 @@ exports.forgotPassword = async(req,res,next)=>{
 };
 
 exports.resetPassword = async(req,res,next)=>{
-    const {forgotPasswordToken} = req.params
-
+    const {link} = req.params
     const {password,confirmPassword} = req.body;
-    
-    try {
-        // Remove whitespaces 
-        const trimmedToken = forgotPasswordToken.trim(); 
 
-        if(!trimmedToken){
-            return next(new ErrorResponse('Access denied: You must have are token', 401))
-        }
-    
-        const user = await Customer.findOne({where:{forgotPasswordToken:trimmedToken}});
-        console.log(user);
+    try {
+
+        //Trim the link to remove whitespaces
+        const trimLink = link.trim();
+
+        if(!trimLink){
+            return next(new ErrorResponse('Access denied: You must have are link', 401))
+        };
+
+        // Hash the provided link
+        const hashedToken = sha512(trimLink); 
         
+
+        // Find the user with the matching hashed token and ensure it's not expired
+        const user = await Customer.findOne({where:{
+            forgotPasswordLink: hashedToken,
+            linkExpiresIn: {[Op.gt]: new Date()},
+            }
+        });
+
         if(!user){
-            return next(new ErrorResponse('User not found',400));
+            return next(new ErrorResponse('Reset password link provided is invalid or has expired',400));
         };
-    
-         // Verify token
-        const decodedToken = jwt.verify(trimmedToken, process.env.TOKEN_SECRET);
-      
-        
-        if(user.id !== decodedToken.id){
-            return next(new ErrorResponse("User ID mismatch",403));
-        };
-    
-        user.forgotPasswordToken = null;
-        await user.save();
     
         // Validate password
         const validate = await validatePassword(password,confirmPassword);
@@ -321,8 +313,11 @@ exports.resetPassword = async(req,res,next)=>{
         // Hash Password
         const hashedPassword = await bcrypt.hash(password,10);
      
-        // UPdate password 
-        await user.update({password:hashedPassword});
+        // UPdate user 
+        user.forgotPasswordLink = null;
+        user.linkExpiresIn = null;
+        user.password = hashedPassword;
+        await user.save();
      
         res.status(200).json({
             success:true,
@@ -330,9 +325,6 @@ exports.resetPassword = async(req,res,next)=>{
         });
 
     } catch (error) {
-        if(error.message ==="jwt expired"){
-            return next(new ErrorResponse("Link has expired. Please request a new reset password link.",403))
-        };
         next(error);
     };
 }

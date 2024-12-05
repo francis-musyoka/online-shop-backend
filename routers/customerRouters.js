@@ -25,6 +25,6 @@ router.get('/logout',logOUt);
 router.get('/getsingleuser/:id',getSingleUser);
 router.get('/get-all-users',getAllUsers);
 router.post('/forgotpassword', forgotPassword)
-router.post('/reset-password/:forgotPasswordToken', resetPassword)
+router.post('/resetpassword/:link', resetPassword)
 
 module.exports = router
