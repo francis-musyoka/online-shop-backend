@@ -42,9 +42,32 @@ exports.generateResetToken = async (user) => {
     
         // Send the raw token to the user in the link
         return `http://localhost:3000/reset-password/${token}`;
-    };
+};
 
+exports.generateResetShopToken = async (shop) => {
+        const token = uuidv4().replace(/-/g, '');
+        
+        const hashedToken = sha512(token); 
+        const linkExpiration = new Date(Date.now() + 10 * 60 * 1000);
 
+        shop.forgotPasswordLink = hashedToken;
+        shop.linkExpiresIn = linkExpiration;
+        await shop.save();
+        
+    
+        // Send the raw token to the user in the link
+        return `http://localhost:3000/reset-password/${token}`;
+};
+
+exports.generateLogInShopToken = async (shop)=>{
+        const payload = {id: shop.id};
+        const secretKey = process.env.SHOP_TOKEN_SECRET;
+        const tokenExpiresIn =Number(process.env.SHOP_TOKEN_EXPIRES_IN) || '2d'
+
+        const token = jwt.sign(payload,secretKey,{expiresIn: tokenExpiresIn});
+
+        return token;
+}
     
 
 

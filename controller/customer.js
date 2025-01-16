@@ -64,14 +64,14 @@ exports.signin = async(req,res,next)=>{
         const user = await Customer.findOne({where:{email:email}});
 
         if(!user){
-            return next(new ErrorResponse('No user with this email', 404))
+            return next(new ErrorResponse('Wrong email or password', 401))
         };
 
         //VALIDATE PASSWORD
         const isPasswordValid = await bcrypt.compare(password,user.password);
         
         if(!isPasswordValid){
-            return next(new ErrorResponse('Invalid credentials',401));
+            return next(new ErrorResponse('Wrong email or password',401));
         };
 
         //generate token:

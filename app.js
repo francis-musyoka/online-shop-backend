@@ -7,7 +7,8 @@ const cors = require('cors')
 
 const db = require('./utils/database');
 const {errorHandle} = require('./middleware/errorMiddleware');
-const customerRouters = require('./routers/customerRouters')
+const customerRouters = require('./routers/customerRouters');
+const shopRouters = require('./routers/shopRouters');
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use(cors({
 app.use(morgan('dev'));
 
 app.use(customerRouters);
+app.use(shopRouters);
 
 app.use(errorHandle);
 
