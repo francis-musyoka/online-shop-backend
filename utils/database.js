@@ -1,10 +1,14 @@
 const Sequelize = require('sequelize');
 
+// const sequelize = new Sequelize(process.env.MYSQL_DATABASE, process.env.MYSQL_USERNAME, process.env.MYSQL_ROOT_PASSWORD, {
+//     host: process.env.DATABASE_local_HOST,
+//     dialect: process.env.DATABASE_DIALECT
+//   });
 
-const sequelize = new Sequelize(process.env.DATABASE, process.env.USERNAME, process.env.PASSWORD, {
-    host: process.env.HOST,
-    dialect: process.env.DIALECT
-  });
+const sequelize = new Sequelize(process.env.MYSQL_DATABASE, process.env.MYSQL_USER, process.env.MYSQL_PASSWORD, {
+  host: process.env.DATABASE_HOST,
+  dialect: process.env.DATABASE_DIALECT
+});
 
 const db = {};
 
@@ -13,5 +17,14 @@ db.sequelize = sequelize;
 
 db.Customer = require('../models/customerModel')(Sequelize,sequelize);
 db.Shop = require('../models/shopModel')(Sequelize,sequelize);
+db.Category = require('../models/categoryModel')(Sequelize,sequelize);
+db.Product = require('../models/productModel')(Sequelize,sequelize);
+
+db.Category.hasMany(db.Product, { foreignKey: 'categoryId' ,onDelete: "CASCADE"});
+db.Product.belongsTo(db.Category, { foreignKey: 'categoryId' });
+
+db.Shop.hasMany(db.Product, { foreignKey: 'shopId' ,onDelete: "CASCADE" });
+db.Product.belongsTo(db.Shop, { foreignKey: 'shopId' });
+
 
 module.exports = db;

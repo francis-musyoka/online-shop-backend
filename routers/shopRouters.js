@@ -13,5 +13,6 @@ router.post('/shop/forgotpassword', shopController.forgotPassword);
 router.get('/get-shop-profile', authenticateShop, shopController.getShopProfile);
 router.post('/shop/logout', shopController.logOut);
 router.post('/resetshoppassword/:link', shopController.resetShopPassword);
+router.post('/update-shop-profile/:id', authenticateShop, shopController.updateShopProfile);
 
 module.exports = router;

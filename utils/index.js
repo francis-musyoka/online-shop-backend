@@ -56,7 +56,7 @@ exports.generateResetShopToken = async (shop) => {
         
     
         // Send the raw token to the user in the link
-        return `http://localhost:3000/reset-password/${token}`;
+        return `http://localhost:3000/sell/reset-password/${token}`;
 };
 
 exports.generateLogInShopToken = async (shop)=>{

@@ -35,17 +35,17 @@ exports.isAuthenticated = async(req,res,next)=>{
 
 
 exports.authenticateShop = async(req,res,next)=>{
-    const{token} = req.cookies;
+    const{shopToken} = req.cookies;
      try {
-        if(!token){
+        if(!shopToken){
             return next(new ErrorResponse('Access denied: You must Log in to access',401));
         };
 
-        const verfyToken =  jwt.verify(token,process.env.SHOP_TOKEN_SECRET);
+        const verfyToken =  jwt.verify(shopToken,process.env.SHOP_TOKEN_SECRET);
         const shopProfile = await db.Shop.findOne({where:{
             id:verfyToken.id},
             //attributes:['id','firstName','lastName','email'],
-             attributes:{exclude:['password','accessToken','createdAt','updatedAt']}
+             attributes:{exclude:['password','accessToken', 'forgotPasswordLink','linkExpiresIn','createdAt','updatedAt']}
             });
 
         if(!shopProfile){
@@ -63,4 +63,5 @@ exports.authenticateShop = async(req,res,next)=>{
         next(error);
      }
    
-}
+};
+

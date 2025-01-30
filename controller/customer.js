@@ -15,7 +15,6 @@ const {Op} = db.Sequelize;
 
 exports.createUser = async(req,res,next)=>{
     const {firstName,lastName,email,password,confirmPassword} = req.body;
-    console.log(password,confirmPassword);
     
     const id = uuidv4().replace(/-/g, '');
 

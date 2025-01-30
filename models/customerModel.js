@@ -1,4 +1,3 @@
-const { token } = require("morgan");
 
 
 module.exports = (Sequelize,sequelize)=>{
