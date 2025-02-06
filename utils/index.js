@@ -2,6 +2,9 @@ const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
 const {sha512} = require('js-sha512');
 
+const db = require('./database');
+const {Wishlist} = db;
+
 exports.generateToken = (user)=>{
         const payload = {id: user.id};
         const secretKey = process.env.TOKEN_SECRET;
@@ -67,11 +70,32 @@ exports.generateLogInShopToken = async (shop)=>{
         const token = jwt.sign(payload,secretKey,{expiresIn: tokenExpiresIn});
 
         return token;
-}
+};
     
 
+//Wishlist Functions
+exports.addWishlist = async(productId, customerId)=>{
 
+        const id = uuidv4().replace(/-/g,'');
 
+        await Wishlist.create({
+                id: id,
+                customerId:customerId,
+                productId: productId
+        });
+
+};
+
+exports.removeWishList = async(productId,customerId)=>{
+
+        await Wishlist.destroy({
+                where:{
+                customerId:customerId,
+                productId: productId
+                }
+        });
+        
+}
 
 
 

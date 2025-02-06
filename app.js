@@ -13,6 +13,8 @@ const customerRouters = require('./routers/customerRouters');
 const shopRouters = require('./routers/shopRouters');
 const categoryRouter = require('./routers/categoryRouters')
 const productRouter = require('./routers/productRouter')
+const wishlistRouter = require('./routers/wishlistRouter')
+
 
 const app = express();
 
@@ -33,7 +35,7 @@ app.use(customerRouters);
 app.use(shopRouters);
 app.use(categoryRouter);
 app.use(productRouter);
-
+app.use(wishlistRouter);
 
 app.use(errorHandle);
 

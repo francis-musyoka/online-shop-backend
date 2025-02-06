@@ -16,7 +16,7 @@ module.exports = (Sequelize,sequelize)=>{
             allowNull: false,
         },
         keyFeatures:{
-            type: Sequelize.TEXT,
+            type: Sequelize.JSON,
             allowNull: false,
         },
         categoryId: {
@@ -29,7 +29,7 @@ module.exports = (Sequelize,sequelize)=>{
             onDelete: "CASCADE"
           },
         price:{
-            type: Sequelize.DECIMAL(10,2),
+            type: Sequelize.INTEGER,
             allowNull: false,
         },
         quantity:{
