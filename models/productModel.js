@@ -12,7 +12,7 @@ module.exports = (Sequelize,sequelize)=>{
             allowNull: false,
         },
         description: {
-            type: Sequelize.TEXT,
+            type: Sequelize.JSON,
             allowNull: false,
         },
         keyFeatures:{

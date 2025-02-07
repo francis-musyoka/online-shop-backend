@@ -11,5 +11,8 @@ router.get('/shop/product',authenticateShop, productController.getProductsForEac
 router.put('/shop/edit/product/:id',authenticateShop, productController.editProduct);
 router.get('/all/products', productController.getAllProducts);
 router.get('/single/product/:id', productController.getSingleProduct);
+router.get('/single/product/for/edit/:id',authenticateShop, productController.getCurrentProductOnEdit);
+router.post('/delete/product/:productId',authenticateShop, productController.deleteProduct);
+
 
 module.exports = router

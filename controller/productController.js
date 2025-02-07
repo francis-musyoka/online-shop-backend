@@ -5,7 +5,8 @@ const { v4: uuidv4 } = require('uuid');
 const { where } = require("sequelize");
 
 
-const {Product, Category} = db;
+
+const {Product, Category,Shop} = db;
 
 exports.addProduct =async(req,res,next)=>{
    
@@ -61,8 +62,8 @@ exports.getProductsForEachShop =async(req,res,next)=>{
                 model: Category,
                 attributes: ['name']
             },
-            // attributes:['id','productName','quantity','image','price']
-            attributes:{exclude:['shopId','createdAt','updatedAt']}
+            attributes:['id','productName','quantity','image','price', 'status']
+            // attributes:{exclude:['shopId','createdAt','updatedAt']}
         });
         res.status(200).json({
             success: true,
@@ -129,8 +130,10 @@ exports.getAllProducts = async(req,res,next)=>{
                 model: Category,
                 attributes:['name']
             },
-            attributes:{exclude:['createdAt','updatedAt']}
+            attributes:{exclude:['createdAt','updatedAt','shopId','categoryId']}
+            // attributes:['id','productName','image','price']
         });
+        
         res.status(200).json({
             success: true,
             products
@@ -142,6 +145,8 @@ exports.getAllProducts = async(req,res,next)=>{
 
 exports.getSingleProduct =async(req,res,next)=>{
         const {id} = req.params
+        console.log('ID==>', id);
+        
         try {
             const productDetail = await Product.findOne({
                 where:{id:id},
@@ -149,8 +154,14 @@ exports.getSingleProduct =async(req,res,next)=>{
                     model: Category,
                     attributes:['name']
                 },
-                attributes:{exclude:['createdAt','updatedAt']}
+                include:{
+                    model: Shop,
+                    attributes:['businessName']
+                },
+                attributes:{exclude:['createdAt','updatedAt','shopId','categoryId']}
             })
+
+           
             res.status(200).json({
                 success: true,
                 productDetail
@@ -158,4 +169,52 @@ exports.getSingleProduct =async(req,res,next)=>{
         } catch (error) {
             next(error)
         }
+};
+
+exports.getCurrentProductOnEdit =async(req,res,next)=>{
+        const {id} = req.params;
+        const shopId = req.shop.id
+
+        console.log('PRODUCT ID', id);
+        console.log('SHOP ID', shopId);
+        
+        try {
+            const product = await Product.findOne({
+                where:{
+                    id:id,
+                    shopId:shopId
+                },
+                attributes:{exclude:['createdAt','updatedAt','shopId']}
+
+            })
+            if(!product){
+                return next(new ErrorResponse('Product Not found', 404));
+            }
+            res.status(200).json({
+                success: true,
+                product
+            })
+        } catch (error) {
+            next(error)
+        }
+};
+
+exports.deleteProduct = async(req,res,next)=>{
+    const {productId} = req.params;
+    const shopId = req.shop.id;
+
+    try {
+        await Product.destroy({
+            where:{
+                id: productId,
+                shopId: shopId
+            }
+        });
+
+        res.status(204).json({
+            success: true
+        })
+    } catch (error) {
+        next(error)
+    }
 }
