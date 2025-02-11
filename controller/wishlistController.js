@@ -96,4 +96,30 @@ exports.getWishlist = async(req,res,next)=>{
         next(error)
     }
     
+};
+
+exports.getLimittedWishlist = async(req,res,next)=>{
+    const customerId  = req.user.id;
+    
+    try {
+        const myWishlist = await Wishlist.findAll({
+            where:{
+                customerId: customerId
+            },
+            include:{
+                model: Product,
+                attributes:['productName','price','discount','image']
+            },
+            attributes:{exclude:['createdAt','updatedAt']},
+            limit: 4
+        });
+        
+        res.status(200).json({
+            success:true,
+            myWishlist
+        })
+    } catch (error) {
+        next(error)
+    }
+    
 }

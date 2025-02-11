@@ -130,8 +130,8 @@ exports.getAllProducts = async(req,res,next)=>{
                 model: Category,
                 attributes:['name']
             },
-            attributes:{exclude:['createdAt','updatedAt','shopId','categoryId']}
-            // attributes:['id','productName','image','price']
+            // attributes:{exclude:['createdAt','updatedAt','shopId','categoryId']}
+            attributes:['id','productName','image','price']
         });
         
         res.status(200).json({
