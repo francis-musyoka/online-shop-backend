@@ -13,7 +13,7 @@ RUN npm install
 COPY . .
 
 # Expose the port 
-EXPOSE  4000
+EXPOSE  5000
 
 
 # Run the app in development mode

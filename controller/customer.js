@@ -4,14 +4,14 @@ const ErrorResponse = require('../utils/error');
 const { validatePassword } = require('../utils/validate');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
-const { generateToken,cookieOptions, generateResetToken } = require('../utils');
+const { generateToken,cookieOptions, generateResetToken, mergeGuestCart } = require('../utils/index');
 const jwt = require('jsonwebtoken');
 const nodemailer = require("nodemailer");
 const {sha512} = require('js-sha512');
 
 
-const {Customer} = db;
-const {Op} = db.Sequelize;
+const {Customer,sequelize,Sequelize} = db;
+const {Op} = Sequelize;
 
 exports.createUser = async(req,res,next)=>{
     const {firstName,lastName,email,password,confirmPassword} = req.body;
@@ -58,7 +58,9 @@ exports.createUser = async(req,res,next)=>{
 };
 
 exports.signin = async(req,res,next)=>{
-    const {email,password} = req.body;
+    const {email,password,guestId} = req.body;
+    const transaction = await sequelize.transaction();
+
     try {
         const user = await Customer.findOne({where:{email:email}});
 
@@ -73,6 +75,13 @@ exports.signin = async(req,res,next)=>{
             return next(new ErrorResponse('Wrong email or password',401));
         };
 
+        // Merge guest cart if guestId is provided
+        if (guestId) await mergeGuestCart(guestId, user.id, transaction,next);
+
+        // Commit transaction
+        await transaction.commit();
+
+
         //generate token:
         const token = generateToken(user);
 
@@ -84,7 +93,9 @@ exports.signin = async(req,res,next)=>{
             .json({success: true, token});
 
     } catch (error) {
+       await transaction.rollback()
         next(error)
+        
     };
 };
 
@@ -326,4 +337,4 @@ exports.resetPassword = async(req,res,next)=>{
     } catch (error) {
         next(error);
     };
-}
+};
