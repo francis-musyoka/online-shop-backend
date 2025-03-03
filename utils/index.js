@@ -6,6 +6,7 @@ const {sha512} = require('js-sha512');
 
 const db = require('./database');
 const ErrorResponse = require('./error');
+const { PRODUCTION } = require('../constants');
 
 const {Wishlist,Cart,GuestCart} = db;
 
@@ -55,6 +56,7 @@ const generateResetToken = async (user) => {
     
         // Send the raw token to the user in the link
         return `http://localhost:3000/reset-password/${token}`;
+//        return `${PRODUCTION.FRONT_END_URL}/reset-password/${token}`
 };
 
 const generateResetShopToken = async (shop) => {
@@ -70,6 +72,8 @@ const generateResetShopToken = async (shop) => {
     
         // Send the raw token to the user in the link
         return `http://localhost:3000/sell/reset-password/${token}`;
+        
+        // return `${PRODUCTION.FRONT_END_URL}/sell/reset-password/${token}`
 };
 
 const generateLogInShopToken = async (shop)=>{

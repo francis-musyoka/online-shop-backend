@@ -15,7 +15,9 @@ const categoryRouter = require('./routers/categoryRouters')
 const productRouter = require('./routers/productRouter')
 const wishlistRouter = require('./routers/wishlistRouter')
 const cartRouter = require('./routers/cartRouters')
-const guestCartRouter = require('./routers/geustCartRouters')
+const guestCartRouter = require('./routers/geustCartRouters');
+const shippingAddressRouter = require('./routers/shippingAddressRouters')
+const { PRODUCTION } = require('./constants');
 
 const app = express();
 
@@ -26,6 +28,13 @@ app.use(cors({
     origin:"http://localhost:3000",
     credentials: true
 }));
+
+// app.use(cors({
+//     origin: PRODUCTION.FRONT_END_URL,
+//     credentials: true
+// }));
+
+
 app.use(morgan('dev'));
 
 
@@ -39,6 +48,7 @@ app.use(productRouter);
 app.use(wishlistRouter);
 app.use(cartRouter);
 app.use(guestCartRouter);
+app.use(shippingAddressRouter);
 
 app.use(errorHandle);
 

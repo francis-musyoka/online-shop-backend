@@ -22,6 +22,7 @@ db.Product = require('../models/productModel')(Sequelize,sequelize);
 db.Wishlist = require('../models/wishlistModel')(Sequelize,sequelize);
 db.Cart = require('../models/cartModel')(Sequelize,sequelize);
 db.GuestCart = require('../models/guestCartModel')(Sequelize,sequelize);
+db.ShippingAddress = require('../models/shippingAddressesModel')(Sequelize,sequelize);
 
 db.Category.hasMany(db.Product, { foreignKey: 'categoryId' ,onDelete: "CASCADE"});
 db.Product.belongsTo(db.Category, { foreignKey: 'categoryId' });
@@ -43,6 +44,9 @@ db.Cart.belongsTo(db.Product, { foreignKey: "productId" });
 
 db.Product.hasMany(db.GuestCart, { foreignKey: "productId", onDelete: "CASCADE" });
 db.GuestCart.belongsTo(db.Product, { foreignKey: "productId" });
+
+db.Customer.hasMany(db.ShippingAddress, { foreignKey: "customerId", onDelete: "CASCADE" });
+db.ShippingAddress.belongsTo(db.Customer, { foreignKey: "customerId" });
 
 
 module.exports = db;
