@@ -32,6 +32,10 @@ module.exports = (Sequelize,sequelize)=>{
                 type: Sequelize.STRING,
                 allowNull: false,
             },
+            apartment:{
+                type: Sequelize.STRING,
+                allowNull: false,
+            },
             city:{
                 type: Sequelize.STRING,
                 allowNull: false,
@@ -47,11 +51,15 @@ module.exports = (Sequelize,sequelize)=>{
             country:{
                 type: Sequelize.STRING,
                 allowNull: false,
-                default: "Kenya"
+                defaultValue: "Kenya"
             },
             phoneNumber:{
                 type:Sequelize.STRING,
                 allowNull: false,
+            },
+            isDefault:{
+                type:Sequelize.BOOLEAN,
+                defaultValue: false
             }
         }
     )

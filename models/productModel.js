@@ -46,7 +46,7 @@ module.exports = (Sequelize,sequelize)=>{
         },
         discount:{
             type: Sequelize.DECIMAL(10,2), 
-            default: 0
+            defaultValue: 0
            
         },
         status:{

@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
 const {sha512} = require('js-sha512');
-
+const axios = require('axios')
 
 
 const db = require('./database');
@@ -158,13 +158,29 @@ const mergeGuestCart = async (guestId, customerId, transaction,next) => {
     };
     
 
+const generateStkPushPassword = ()=>{
+        const shortcode = process.env.MPESA_SHORTCODE;
+        const passkey = process.env.MPESA_PASSKEY;
+        const timeStamp = new Date().toISOString().replace(/[^0-9]/g, "").slice(0,14);
+        const password = Buffer.from(`${shortcode}${passkey}${timeStamp}`).toString('base64');
+        return [password,timeStamp]
+};
+
+const getStkPushAccessToken = async()=>{
+        const {data} = await axios.get('https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials',{
+        auth:{
+                username: process.env.MPESA_CONSUMER_KEY,
+                password: process.env.MPESA_CONSUMER_SECRET
+        }
+        });
+        return data.access_token
+};
 
 
 module.exports = {
         createId,cookieOptions, generateToken,generateForgotPasswordToken,
         generateLogInShopToken,generateResetShopToken,generateResetToken,addWishlist,
-        removeWishList, mergeGuestCart
+        removeWishList, mergeGuestCart, generateStkPushPassword, getStkPushAccessToken
 }
-
 
 

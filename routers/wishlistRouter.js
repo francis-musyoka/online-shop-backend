@@ -1,6 +1,6 @@
 const express = require('express');
 const{isAuthenticated} = require('../middleware/auth');
-const wishlistController =require('../controller/wishlistController')
+const wishlistController =require('../controller/customerController/wishlistController')
 
 const router = express.Router();
 

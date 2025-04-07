@@ -23,6 +23,13 @@ db.Wishlist = require('../models/wishlistModel')(Sequelize,sequelize);
 db.Cart = require('../models/cartModel')(Sequelize,sequelize);
 db.GuestCart = require('../models/guestCartModel')(Sequelize,sequelize);
 db.ShippingAddress = require('../models/shippingAddressesModel')(Sequelize,sequelize);
+db.MpesaNumber = require('../models/mpesaNumberModel')(Sequelize,sequelize);
+db.MpesaTransaction = require('../models/mpesaTranscationModel')(Sequelize,sequelize);
+db.Order = require('../models/customerModels/orderModel')(Sequelize,sequelize);
+db.OrderItem = require('../models/customerModels/orderItemModel')(Sequelize,sequelize);
+
+
+//Relationships
 
 db.Category.hasMany(db.Product, { foreignKey: 'categoryId' ,onDelete: "CASCADE"});
 db.Product.belongsTo(db.Category, { foreignKey: 'categoryId' });
@@ -47,6 +54,18 @@ db.GuestCart.belongsTo(db.Product, { foreignKey: "productId" });
 
 db.Customer.hasMany(db.ShippingAddress, { foreignKey: "customerId", onDelete: "CASCADE" });
 db.ShippingAddress.belongsTo(db.Customer, { foreignKey: "customerId" });
+
+db.Customer.hasMany(db.MpesaNumber, { foreignKey: "customerId", onDelete: "CASCADE" });
+db.MpesaNumber.belongsTo(db.Customer, { foreignKey: "customerId" });
+
+db.Customer.hasMany(db.MpesaTransaction, { foreignKey: "customerId", onDelete: "CASCADE" });
+db.MpesaTransaction.belongsTo(db.Customer, { foreignKey: "customerId" });
+
+db.Order.hasMany(db.OrderItem, { foreignKey: 'orderId' });
+db.OrderItem.belongsTo(db.Order, { foreignKey: 'orderId' });
+
+db.Customer.hasMany(db.Order, { foreignKey: 'customerId' });
+db.Order.belongsTo(db.Customer, { foreignKey: 'customerId' });
 
 
 module.exports = db;
