@@ -9,7 +9,7 @@ router.post('/addproducttocart/:productId', isAuthenticated, cartController.addP
 router.get('/cart', isAuthenticated, cartController.getCustomerCart);
 router.patch('/update/cart/:productId', isAuthenticated, cartController.updateCartQuantity);
 router.post('/delete/cart/:productId', isAuthenticated, cartController.removeProductFromCart);
-router.post('/clear/cart/',isAuthenticated, cartController.clearCart);
+router.post('/clear/cart',isAuthenticated, cartController.clearCart);
 
 
 

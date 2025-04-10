@@ -32,7 +32,7 @@ exports.stkPush = async(req,res,next)=>{
             PartyA: phoneNumber,
             PartyB: process.env.MPESA_SHORTCODE,
             PhoneNumber: phoneNumber,
-            CallBackURL: 'https://d6f2-41-209-3-194.ngrok-free.app/mpesa/callback', // This is a placeholder
+            CallBackURL: 'https://1a10-41-209-3-194.ngrok-free.app/mpesa/callback', // This is a placeholder
             AccountReference: 'CompanyXLTD',
             TransactionDesc: 'Payment for goods',
         };
@@ -51,7 +51,8 @@ exports.stkPush = async(req,res,next)=>{
             checkoutRequestId:data.CheckoutRequestID,
             customerId: customerId,
             amount: total,
-            phoneNumber: phoneNumber
+            phoneNumber: phoneNumber,
+            status:"pending"
         });
      
         res.status(200).json({

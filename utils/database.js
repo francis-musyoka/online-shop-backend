@@ -27,6 +27,7 @@ db.MpesaNumber = require('../models/mpesaNumberModel')(Sequelize,sequelize);
 db.MpesaTransaction = require('../models/mpesaTranscationModel')(Sequelize,sequelize);
 db.Order = require('../models/customerModels/orderModel')(Sequelize,sequelize);
 db.OrderItem = require('../models/customerModels/orderItemModel')(Sequelize,sequelize);
+db.OrderCounter = require('../models/customerModels/orderCounterModel')(Sequelize,sequelize);
 
 
 //Relationships
@@ -60,6 +61,10 @@ db.MpesaNumber.belongsTo(db.Customer, { foreignKey: "customerId" });
 
 db.Customer.hasMany(db.MpesaTransaction, { foreignKey: "customerId", onDelete: "CASCADE" });
 db.MpesaTransaction.belongsTo(db.Customer, { foreignKey: "customerId" });
+
+db.Order.hasMany(db.MpesaTransaction, { foreignKey: 'orderId' });
+db.MpesaTransaction.belongsTo(db.Order, { foreignKey: 'orderId' });
+
 
 db.Order.hasMany(db.OrderItem, { foreignKey: 'orderId' });
 db.OrderItem.belongsTo(db.Order, { foreignKey: 'orderId' });

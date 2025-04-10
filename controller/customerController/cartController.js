@@ -117,6 +117,9 @@ exports.removeProductFromCart = async(req,res,next)=>{
 
 exports.clearCart = async(req,res,next)=>{
     const customerId = req.user.id;
+
+    console.log("I AM CLEARING CART");
+    
     try {
         await Cart.destroy({
             where:{

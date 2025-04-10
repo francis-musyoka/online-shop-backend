@@ -8,7 +8,7 @@ const db = require('./database');
 const ErrorResponse = require('./error');
 const { PRODUCTION } = require('../constants');
 
-const {Wishlist,Cart,GuestCart} = db;
+const {Wishlist,Cart,GuestCart,OrderCounter,sequelize} = db;
 
 
 const createId = ()=>{
@@ -176,11 +176,47 @@ const getStkPushAccessToken = async()=>{
         return data.access_token
 };
 
+const generateOrderNumber = async () => {
+        return await sequelize.transaction(async (t) => {
+                let currentCount = null;
+
+                const counter = await OrderCounter.findOne({
+                        where: { id: 1 },
+                        transaction: t,
+                        });
+
+                if (counter) {
+                        currentCount = counter.count + 1
+                        counter.count = currentCount; 
+                        await counter.save({ transaction: t });
+                } else {
+                        await OrderCounter.create({
+                                id: 1,
+                                count: 100000,
+                                transaction: t 
+                        });
+                        currentCount = 100000;
+                };
+
+                const now = new Date();
+                const year = now.getFullYear().toString().slice(-2);
+                const month = (now.getMonth() + 1).toString().padStart(2, '0');
+                const day = (now.getDate().toString().padStart(2,"0"))
+                const randomTwo = Math.floor(Math.random() * 90 + 10);
+
+                const orderNumber = `RF${year}${month}${day}${currentCount}${randomTwo}`
+
+                return  orderNumber;
+
+        });
+};
+      
 
 module.exports = {
         createId,cookieOptions, generateToken,generateForgotPasswordToken,
         generateLogInShopToken,generateResetShopToken,generateResetToken,addWishlist,
-        removeWishList, mergeGuestCart, generateStkPushPassword, getStkPushAccessToken
+        removeWishList, mergeGuestCart, generateStkPushPassword, getStkPushAccessToken,
+        generateOrderNumber
 }
 
 

@@ -57,7 +57,7 @@ module.exports = (Sequelize,sequelize)=>{
             },
             accessToken:{
                 type: Sequelize.STRING, 
-                default: null
+                defaultValue: null
             },
             forgotPasswordLink:{
                 type: Sequelize.STRING(1234),

@@ -1,25 +1,24 @@
-const axios = require('axios');
 
-// const {MPESA_CONSUMER_KEY,MPESA_CONSUMER_SECRET} = process.env
+const db = require('./database');
+const {Wishlist,Cart,GuestCart,OrderCounter,sequelize} = db;
 
-const generateAccessToken = async()=>{
-    try {
-        const {data} = await axios.get('https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials',{
-            auth:{
-                userName: MPESA_CONSUMER_KEY,
-                password: MPESA_CONSUMER_SECRET
-            }
-        });
-        console.log("Access Token::",data.access_token);
-         
-    } catch (error) {
-        console.log(error.response);   
-    };
+const generateOrderNumber = async () => {
+    return await sequelize.transaction(async (t) => {
+            const counter = await OrderCounter.findOrCreate({
+            where: { id: 1 }, 
+            defaults: { current: 100000 },
+            transaction: t
+            });
+            const currentCount = counter.count;
+            counter.count += 1;
+            await counter.save({ transaction: t });
+
+            const now = new Date();
+            const yymm = `${now.getFullYear().toString().slice(-2)}${(now.getMonth() + 1).toString().padStart(2, '0')}`;
+            const randomTwo = Math.floor(Math.random() * 90 + 10);
+
+            return `RF${yymm}${currentCount}${randomTwo}`;
+
+    });
 };
-
- console.log('CONSUMER KEY=>', process.env.MPESA_CONSUMER_KEY);
- console.log('CONSUMER SECRET KEY=>', process.env.MPESA_CONSUMER_SECRET);
- console.log('TEST=>', process.env.MYSQL_DATABASE);
- 
-
 

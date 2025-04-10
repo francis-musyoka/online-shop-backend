@@ -14,7 +14,11 @@ module.exports = (Sequelize, sequelize) => {
         },
         productId: {
             type: Sequelize.STRING,
-            allowNull: false
+            allowNull: false,
+        },
+        imagePath:{
+            type: Sequelize.STRING,
+            allowNull: false,
         },
         productName: {
             type: Sequelize.STRING,

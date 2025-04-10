@@ -18,6 +18,18 @@ module.exports = (Sequelize, sequelize) => {
             type: Sequelize.INTEGER,
             allowNull: false
         },
+        orderNumber:{
+            type: Sequelize.STRING,
+            unique: true,
+        },
+        shippingAddress: {
+            type: Sequelize.JSON, 
+            allowNull: false,
+          },
+          billingAddress: {
+            type: Sequelize.JSON,
+            allowNull: true,
+          },
         status: {
             type: Sequelize.ENUM("unpaid", "paid"),
             type: Sequelize.STRING,
