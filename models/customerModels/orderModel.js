@@ -9,27 +9,28 @@ module.exports = (Sequelize, sequelize) => {
             type: Sequelize.STRING,
             allowNull: false,
             references: {
-                model: 'Customers',
+                tableName: 'Customers',
                 key: 'id'
             },
-            onDelete: 'CASCADE'
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE'
         },
         totalAmount: {
             type: Sequelize.INTEGER,
             allowNull: false
         },
-        orderNumber:{
+        orderNumber: {
             type: Sequelize.STRING,
             unique: true,
         },
         shippingAddress: {
-            type: Sequelize.JSON, 
+            type: Sequelize.JSON,
             allowNull: false,
-          },
-          billingAddress: {
+        },
+        billingAddress: {
             type: Sequelize.JSON,
             allowNull: true,
-          },
+        },
         status: {
             type: Sequelize.ENUM("unpaid", "paid"),
             type: Sequelize.STRING,

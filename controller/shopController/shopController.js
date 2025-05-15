@@ -6,41 +6,41 @@ const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
-const {sha512} = require('js-sha512');
+const { sha512 } = require('js-sha512');
 
-const {Shop} = db;
-const {Op} = db.Sequelize;
+const { Shop } = db;
+const { Op } = db.Sequelize;
 
-exports.createShop = async(req,res,next)=>{
+exports.createShop = async (req, res, next) => {
     const formData = req.body.formData
-    const {businessName,businessNumber,email,password, confirmPassword,addressLine1,addressLine2,city,state,zipCode} = formData;
+    const { businessName, businessNumber, email, password, confirmPassword, addressLine1, addressLine2, city, state, zipCode } = formData;
     try {
 
         const uuid = uuidv4();
         const id = uuid.replace(/-/g, '');
 
-        const isBusinessNameExist = await Shop.findOne({where:{businessName:businessName}});
-        if(isBusinessNameExist){
+        const isBusinessNameExist = await Shop.findOne({ where: { businessName: businessName } });
+        if (isBusinessNameExist) {
             return next(new ErrorResponse(`The business name already exist`, 400));
         };
 
-        const isBusinessNumberExist = await Shop.findOne({where:{businessNumber:businessNumber}});
-        if(isBusinessNumberExist){
+        const isBusinessNumberExist = await Shop.findOne({ where: { businessNumber: businessNumber } });
+        if (isBusinessNumberExist) {
             return next(new ErrorResponse(`The business number already exist`, 400));
         };
 
-        const isEmailExist = await Shop.findOne({where:{email:email}});
-        if(isEmailExist){
+        const isEmailExist = await Shop.findOne({ where: { email: email } });
+        if (isEmailExist) {
             return next(new ErrorResponse(`The email already exist`, 400));
         };
 
-        const validated = await validatePassword(password,confirmPassword);
+        const validated = await validatePassword(password, confirmPassword);
 
-        if(!validated.success){
+        if (!validated.success) {
             return next(new ErrorResponse(validated.message, 400))
         };
 
-        const hashedPassword = await bcrypt.hash(password,10);
+        const hashedPassword = await bcrypt.hash(password, 10);
 
         await Shop.create({
             id: id,
@@ -63,44 +63,44 @@ exports.createShop = async(req,res,next)=>{
     } catch (error) {
         next(error)
     }
-    
+
 };
 
-exports.logIn = async(req,res,next)=>{
+exports.logIn = async (req, res, next) => {
     const formData = req.body.formData
-    const {email, password} = formData;
-     try {
-        const shop = await Shop.findOne({where:{email:email}});
-        
-        if(!shop){
+    const { email, password } = formData;
+    try {
+        const shop = await Shop.findOne({ where: { email: email } });
+
+        if (!shop) {
             return next(new ErrorResponse("Wrong email or password", 401));
         };
 
-        const isPasswordCorrect = await bcrypt.compare(password ,shop.password);
+        const isPasswordCorrect = await bcrypt.compare(password, shop.password);
 
-        if(!isPasswordCorrect){
+        if (!isPasswordCorrect) {
             return next(new ErrorResponse("Wrong email or password", 401));
         };
 
         const token = await generateLogInShopToken(shop);
 
-        shop. accessToken = token;
+        shop.accessToken = token;
         await shop.save();
 
         res.status(200)
-        .cookie('shopToken', token, cookieOptions)
-        .json({success: true, msg: 'Log In successfully', token});
+            .cookie('shopToken', token, cookieOptions)
+            .json({ success: true, msg: 'Log In successfully', token });
 
-     } catch (error) {
+    } catch (error) {
         next(error)
-     }
+    }
 };
 
 
-exports.getSingleShop = async(req,res,next)=>{
+exports.getSingleShop = async (req, res, next) => {
     const id = req.params.id;
     try {
-        const shop = await Shop.findOne({where:{id:id}});
+        const shop = await Shop.findOne({ where: { id: id } });
         res.status(200).json({
             success: true,
             shop
@@ -110,11 +110,11 @@ exports.getSingleShop = async(req,res,next)=>{
     }
 };
 
-exports.getShopProfile = (req,res,next)=>{
-     res.status(202).json({success: true, shopProfile: req.shop})
+exports.getShopProfile = (req, res, next) => {
+    res.status(202).json({ authenticated: true, shopProfile: req.shop })
 };
 
-exports.getAllShops = async(req,res,next)=>{
+exports.getAllShops = async (req, res, next) => {
     try {
         const shops = await Shop.findAll();
         res.status(200).json({
@@ -126,18 +126,18 @@ exports.getAllShops = async(req,res,next)=>{
     }
 };
 
-exports.forgotPassword = async(req,res,next)=>{
-    const {email} = req.body;
+exports.forgotPassword = async (req, res, next) => {
+    const { email } = req.body;
 
     console.log(email);
-    
+
     try {
-        const shop = await Shop.findOne({where:{email:email}});
-        
-        if(!shop){
+        const shop = await Shop.findOne({ where: { email: email } });
+
+        if (!shop) {
             return next(new ErrorResponse("Email provided does not exist", 404));
         };
-       
+
         const link = await generateResetShopToken(shop);
 
         const transporter = nodemailer.createTransport({
@@ -147,7 +147,7 @@ exports.forgotPassword = async(req,res,next)=>{
                 pass: process.env.PASSWORDAPP
             }
         });
-          
+
         const mailOptions = {
             from: process.env.E_MAIL,
             to: email,
@@ -159,16 +159,16 @@ exports.forgotPassword = async(req,res,next)=>{
 
                     If you did not make the request ignore. `,
         };
-          
-        transporter.sendMail(mailOptions, function(error, info){
+
+        transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
                 console.log("........???", error);
-                return next(new ErrorResponse('Sorry, Error occured when sent email',500))
-                
+                return next(new ErrorResponse('Sorry, Error occured when sent email', 500))
+
             } else {
                 console.log('Email sent: ' + info.response);
                 res.status(200).json({
-                    success: true, 
+                    success: true,
                     msg: "Email was sent successfully",
                     link
                 });
@@ -181,32 +181,32 @@ exports.forgotPassword = async(req,res,next)=>{
 };
 
 
-exports.logOut = async(req,res,next)=>{
-    const {shopToken} = req.cookies;
+exports.logOut = async (req, res, next) => {
+    const { shopToken } = req.cookies;
 
-    if(!shopToken){
-        return next(new ErrorResponse("Unauthorized: You must have token ",401));
+    if (!shopToken) {
+        return next(new ErrorResponse("Unauthorized: You must have token ", 401));
     };
 
     try {
-        const getShop = await Shop.findOne({where:{accessToken:shopToken}});
+        const getShop = await Shop.findOne({ where: { accessToken: shopToken } });
 
-        if(!getShop){
-            return next(new ErrorResponse("Invalide toke provided",404));
+        if (!getShop) {
+            return next(new ErrorResponse("Invalide toke provided", 404));
         };
 
         const decodeToken = jwt.decode(shopToken);
 
-        if(decodeToken.id !== getShop.id){
-            return next(new ErrorResponse("Invalid token provided",400))
+        if (decodeToken.id !== getShop.id) {
+            return next(new ErrorResponse("Invalid token provided", 400))
         }
 
         getShop.accessToken = null;
         await getShop.save();
 
         res.status(200)
-        .cookie('shopToken', "", cookieOptions)
-        .json({success: true, msg:'Log out successfully'})
+            .cookie('shopToken', "", cookieOptions)
+            .json({ success: true, msg: 'Log out successfully' })
 
     } catch (error) {
         next(error)
@@ -214,53 +214,54 @@ exports.logOut = async(req,res,next)=>{
 };
 
 
-exports.resetShopPassword = async(req,res,next)=>{
-    const {link} = req.params
-    const {password,confirmPassword} = req.body;
+exports.resetShopPassword = async (req, res, next) => {
+    const { link } = req.params
+    const { password, confirmPassword } = req.body;
 
     try {
 
         //Trim the link to remove whitespaces
         const trimLink = link.trim();
 
-        if(!trimLink){
+        if (!trimLink) {
             return next(new ErrorResponse('Access denied: You must have are link', 401))
         };
 
         // Hash the provided link
-        const hashedToken = sha512(trimLink); 
-        
+        const hashedToken = sha512(trimLink);
+
 
         // Find the user with the matching hashed token and ensure it's not expired
-        const shop = await Shop.findOne({where:{
-            forgotPasswordLink: hashedToken,
-            linkExpiresIn: {[Op.gt]: new Date()},
+        const shop = await Shop.findOne({
+            where: {
+                forgotPasswordLink: hashedToken,
+                linkExpiresIn: { [Op.gt]: new Date() },
             }
         });
 
-        if(!shop){
-            return next(new ErrorResponse('Reset password link provided is invalid or has expired',400));
+        if (!shop) {
+            return next(new ErrorResponse('Reset password link provided is invalid or has expired', 400));
         };
-    
+
         // Validate password
-        const validate = await validatePassword(password,confirmPassword);
-        
-        if(!validate.success){
-            return next(new ErrorResponse(validate.message,400))
+        const validate = await validatePassword(password, confirmPassword);
+
+        if (!validate.success) {
+            return next(new ErrorResponse(validate.message, 400))
         };
-     
+
         // Hash Password
-        const hashedPassword = await bcrypt.hash(password,10);
-     
+        const hashedPassword = await bcrypt.hash(password, 10);
+
         // UPdate user 
         shop.forgotPasswordLink = null;
         shop.linkExpiresIn = null;
         shop.password = hashedPassword;
         await shop.save();
-     
+
         res.status(200).json({
-            success:true,
-            msg:"Password succefully Updated"
+            success: true,
+            msg: "Password succefully Updated"
         });
 
     } catch (error) {
@@ -269,68 +270,68 @@ exports.resetShopPassword = async(req,res,next)=>{
 };
 
 
-exports.updateShopProfile = async(req,res,next)=>{
-    const {id} = req.params;
+exports.updateShopProfile = async (req, res, next) => {
+    const { id } = req.params;
     const formData = req.body.formData;
-    
-    const {shopName,phoneNumber,email, addressLine1,addressLine2,city,state,zipCode} = formData;
-    
+
+    const { shopName, phoneNumber, email, addressLine1, addressLine2, city, state, zipCode } = formData;
+
     const shop = req.shop;
-    
+
     try {
         const isEmailExist = await Shop.findOne({
-            where:{
-                email:email, 
-                id:{[Op.ne]:id}
+            where: {
+                email: email,
+                id: { [Op.ne]: id }
             }
         });
 
         const isBusinessNameExist = await Shop.findOne({
-            where:{
-                businessName:shopName, 
-                id:{[Op.ne]:id}
+            where: {
+                businessName: shopName,
+                id: { [Op.ne]: id }
             }
         });
 
         const isBusinessNumberExist = await Shop.findOne({
-            where:{
-                businessNumber:phoneNumber, 
-                id:{[Op.ne]:id}
+            where: {
+                businessNumber: phoneNumber,
+                id: { [Op.ne]: id }
             }
         });
-        
 
-        if(isEmailExist){
-            return next(new ErrorResponse(`This email (${email} )already exist`,400))
-        };
- 
-        if(isBusinessNameExist){
-            return next(new ErrorResponse(`This shop (${businessName}) already exist`,400))
+
+        if (isEmailExist) {
+            return next(new ErrorResponse(`This email (${email} )already exist`, 400))
         };
 
-        if(isBusinessNumberExist){
-            return next(new ErrorResponse(`The phone number already exist`,400))
+        if (isBusinessNameExist) {
+            return next(new ErrorResponse(`This shop (${businessName}) already exist`, 400))
         };
-     
-            
-            shop.businessName = shopName,
-            shop.businessNumber =  phoneNumber,
-            shop.email= email,
-            shop.addressLine1=  addressLine1,
-            shop.addressLine2= addressLine2,
-            shop.city= city,
-            shop.state= state,
-            shop.zipCode= zipCode
 
-        
+        if (isBusinessNumberExist) {
+            return next(new ErrorResponse(`The phone number already exist`, 400))
+        };
+
+
+        shop.businessName = shopName,
+            shop.businessNumber = phoneNumber,
+            shop.email = email,
+            shop.addressLine1 = addressLine1,
+            shop.addressLine2 = addressLine2,
+            shop.city = city,
+            shop.state = state,
+            shop.zipCode = zipCode
+
+
 
         await shop.save();
 
         res.status(200).json({
             success: true,
-            msg:'Shop Profile was successfully updated'
+            msg: 'Shop Profile was successfully updated'
         });
-        
+
     } catch (error) {
         next(error)
     };

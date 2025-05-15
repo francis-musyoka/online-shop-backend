@@ -1,28 +1,33 @@
 
 
-module.exports = (Sequelize,sequelize)=>{
-    const Wishlist = sequelize.define('WishList',{
-        id:{
-            type:Sequelize.STRING,
+module.exports = (Sequelize, sequelize) => {
+    const Wishlist = sequelize.define('WishList', {
+        id: {
+            type: Sequelize.STRING,
             primaryKey: true
         },
-        customerId:{
-            type:Sequelize.STRING,
+        customerId: {
+            type: Sequelize.STRING,
             allowNull: false,
-            references:{
-                model: 'Customers',
-                key: 'id'
+            references: {
+                tableName: 'Customers',
+                key: 'id',
+                onDelete: 'CASCADE'
             },
-            onDelete:'CASCADE'
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE'
+
         },
-        productId:{
-            type:Sequelize.STRING,
+        productId: {
+            type: Sequelize.STRING,
             allowNull: false,
-            references:{
-                model: 'Products',
-                key: 'id'
+            references: {
+                tableName: 'Products',
+                key: 'id',
             },
-            onDelete:'CASCADE'
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE'
+
         }
     });
     return Wishlist

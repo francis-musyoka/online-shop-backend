@@ -1,6 +1,6 @@
 
-module.exports= (Sequelize,sequelize)=>{
-    const OrderCounter = sequelize.define('OrderCount',{
+module.exports = (Sequelize, sequelize) => {
+    const OrderCounter = sequelize.define('OrderCount', {
         id: {
             type: Sequelize.INTEGER,
             primaryKey: true,
@@ -11,10 +11,10 @@ module.exports= (Sequelize,sequelize)=>{
             allowNull: false,
             defaultValue: 1000000, // Start from 1000000
         },
-        }, {
+    }, {
         timestamps: false,
-        freezeTableName: true, 
-        });
-   
+        freezeTableName: true,
+    });
+
     return OrderCounter;
 }

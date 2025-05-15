@@ -1,64 +1,65 @@
-module.exports = (Sequelize,sequelize)=>{
+module.exports = (Sequelize, sequelize) => {
     const ShippingAddress = sequelize.define('ShippingAddress',
         {
-            id:{
+            id: {
                 type: Sequelize.STRING,
                 unique: true,
                 primaryKey: true,
             },
-            customerId:{
+            customerId: {
                 type: Sequelize.STRING,
-                reference:{
-                    model: 'Customers',
+                reference: {
+                    tableName: 'Customers',
                     key: 'id',
                 },
-                onDelete: 'CASCADE'
+                onDelete: 'CASCADE',
+                onUpdate: 'CASCADE'
             },
-            firstName:{
+            firstName: {
                 type: Sequelize.STRING,
                 allowNull: false,
-                validate:{
-                    notEmpty: {msg: 'Please add business name.'}
+                validate: {
+                    notEmpty: { msg: 'Please add business name.' }
                 }
             },
             lastName: {
                 type: Sequelize.STRING,
                 allowNull: false,
-                validate:{
-                    notEmpty: {msg: 'Please add business number.'}
+                validate: {
+                    notEmpty: { msg: 'Please add business number.' }
                 }
             },
-            address:{
+            address: {
                 type: Sequelize.STRING,
                 allowNull: false,
             },
-            apartment:{
+            apartment: {
                 type: Sequelize.STRING,
                 allowNull: false,
             },
-            city:{
+            city: {
                 type: Sequelize.STRING,
                 allowNull: false,
             },
-            state:{
+            state: {
                 type: Sequelize.STRING,
                 allowNull: false,
             },
-            zipCode:{
+            zipCode: {
                 type: Sequelize.STRING,
                 allowNull: false,
             },
-            country:{
+            country: {
                 type: Sequelize.STRING,
                 allowNull: false,
                 defaultValue: "Kenya"
             },
-            phoneNumber:{
-                type:Sequelize.STRING,
+            phoneNumber: {
+                type: Sequelize.STRING,
                 allowNull: false,
             },
-            isDefault:{
-                type:Sequelize.BOOLEAN,
+            isDefault: {
+                type: Sequelize.BOOLEAN,
                 defaultValue: false
             }
         }

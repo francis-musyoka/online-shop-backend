@@ -7,16 +7,17 @@ module.exports = (Sequelize, sequelize) => {
         orderId: {
             type: Sequelize.STRING,
             references: {
-                model: 'Orders',
+                tableName: 'Orders',
                 key: 'id'
             },
-            onDelete: 'CASCADE'
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE'
         },
         productId: {
             type: Sequelize.STRING,
             allowNull: false,
         },
-        imagePath:{
+        imagePath: {
             type: Sequelize.STRING,
             allowNull: false,
         },

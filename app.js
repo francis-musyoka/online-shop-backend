@@ -2,12 +2,12 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 require('dotenv').config();
-const cookieParser =require('cookie-parser');
+const cookieParser = require('cookie-parser');
 const cors = require('cors')
 const path = require('path')
 
 const db = require('./utils/database');
-const {errorHandle} = require('./middleware/errorMiddleware');
+const { errorHandle } = require('./middleware/errorMiddleware');
 
 const customerRouters = require('./routers/customerRouter');
 const shopRouters = require('./routers/shopRouters');
@@ -20,23 +20,34 @@ const shippingAddressRouter = require('./routers/shippingAddressRouters');
 const mpesaNumberRouter = require('./routers/mpesaNumberRouters');
 const mpesaTransactionRouter = require('./routers/mpesaTransactionRouters');
 const orderRouter = require('./routers/customerRoutes/orderRouter');
-const { PRODUCTION } = require('./constants');
+const { PRODUCTION, DEVELOPMENT } = require('./constants');
 
 const app = express();
+
+app.set('trust proxy', 1);
 
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(cookieParser())
 
+
+const allowedOrigins = [
+  PRODUCTION.FRONT_END_URL,
+  DEVELOPMENT.FRONT_END_URL,
+];
+console.log("allowedOrigins::", allowedOrigins);
+
 app.use(cors({
-    origin:"http://localhost:3000",
-    credentials: true
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
 }));
 
-// app.use(cors({
-//     origin: PRODUCTION.FRONT_END_URL,
-//     credentials: true
-// }));
 
 
 app.use(morgan('dev'));
@@ -59,13 +70,13 @@ app.use(orderRouter);
 
 app.use(errorHandle);
 
-const port = process.env.PORT || 4000 ;
+const PORT = process.env.PORT || 4000;
 
-db.sequelize.sync().then(()=>{
-    console.log('Table created');
-    
-    app.listen(port,()=>{
-        console.log(`Server running on port ${port}`); 
-    });
+db.sequelize.sync().then(() => {
+  console.log('Table created');
+
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
 })
 

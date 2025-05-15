@@ -1,9 +1,9 @@
- 
+
 const DEVELOPMENT = {
-    FRONT_END_URL: "http://localhost:3000"
+    FRONT_END_URL: process.env.DEVELOPMENT_FRONT_END_URL
 };
-const PRODUCTION ={
-    FRONT_END_URL: "https://frankfrontend.cntb.onekana.ke"
+const PRODUCTION = {
+    FRONT_END_URL: process.env.PRODUCTION_FRONT_END_URL
 };
 
-module.exports = {DEVELOPMENT,PRODUCTION}
+module.exports = { DEVELOPMENT, PRODUCTION }

@@ -1,26 +1,27 @@
 
 
-module.exports = (Sequelize,sequelize)=>{
-    const MpesaNumber = sequelize.define('MpesaNumber',{
-        id:{
-            type:Sequelize.STRING,
+module.exports = (Sequelize, sequelize) => {
+    const MpesaNumber = sequelize.define('MpesaNumber', {
+        id: {
+            type: Sequelize.STRING,
             primaryKey: true
         },
-        customerId:{
-            type:Sequelize.STRING,
+        customerId: {
+            type: Sequelize.STRING,
             allowNull: false,
-            references:{
-                model: 'Customers',
-                key: 'id'
+            references: {
+                tableName: 'Customers',
+                key: 'id',
             },
-            onDelete:'CASCADE'
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE'
         },
-        phoneNumber:{
-            type:Sequelize.STRING,
+        phoneNumber: {
+            type: Sequelize.STRING,
             allowNull: false,
         },
-        countryCode:{
-            type:Sequelize.STRING,
+        countryCode: {
+            type: Sequelize.STRING,
             allowNull: false,
         }
     });
