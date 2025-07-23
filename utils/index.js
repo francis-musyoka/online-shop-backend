@@ -21,7 +21,6 @@ const generateToken = (user) => {
         const payload = { id: user.id };
         const secretKey = process.env.TOKEN_SECRET;
         const tokenExpiresIn = Number(process.env.TOKEN_EXPIRES_IN) || '1d'
-        console.log("tokenExpiresIn:::::::=>", tokenExpiresIn);
 
         const token = jwt.sign(payload, secretKey, { expiresIn: tokenExpiresIn });
 
@@ -40,9 +39,10 @@ const generateForgotPasswordToken = (user) => {
 const domain = process.env.COOKIE_DOMAIN
 const domainHostName = domain ? new URL(domain).hostname : undefined;
 
+
 const cookieOptions = {
-        httpOnly: process.env.COOKIE_HTTP_ONLY,
-        secure: process.env.COOKIE_SECURE,
+        httpOnly: process.env.COOKIE_HTTP_ONLY === 'true',
+        secure: process.env.COOKIE_SECURE === 'true',
         sameSite: process.env.COOKIE_SAME_SITE,
         domain: domainHostName,
 };

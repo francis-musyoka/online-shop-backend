@@ -3,7 +3,12 @@ const ErrorResponse = require('../utils/error');
 const db = require('../utils/database');
 
 exports.isAuthenticated = async (req, res, next) => {
-    const { token } = req.cookies;
+    const authHeader = req.headers['authorization'];
+    // const authToken = authHeader.split(' ')[1].replace(/^"|"$/g, '');
+
+    const token = req.cookies.token;
+
+
     try {
         if (!token) {
             return res.status(401).json({ authenticated: false, message: 'Access denied: You must log in to access this resource.' });
@@ -40,13 +45,18 @@ exports.isAuthenticated = async (req, res, next) => {
 
 
 exports.authenticateShop = async (req, res, next) => {
-    const { shopToken } = req.cookies;
+    // const authHeader = req.headers['authorization'];
+    // const authToken = authHeader.split(' ')[1].replace(/^"|"$/g, '');
+
+    const shopToken = req.cookies.shopToken
+
     try {
         if (!shopToken) {
             return res.status(401).json({ authenticated: false, message: 'Access denied: You must log in to access this resource.' });;
         };
 
         const verfyToken = jwt.verify(shopToken, process.env.SHOP_TOKEN_SECRET);
+
         const shopProfile = await db.Shop.findOne({
             where: {
                 id: verfyToken.id

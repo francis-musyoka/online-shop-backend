@@ -81,6 +81,7 @@ exports.signin = async (req, res, next) => {
             //generate token:
             const token = generateToken(user);
 
+
             //save token 
             await user.update({ token: token });
 
@@ -336,3 +337,4 @@ exports.resetPassword = async (req, res, next) => {
         next(error);
     };
 };
+

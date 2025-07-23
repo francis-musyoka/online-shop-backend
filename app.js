@@ -35,7 +35,6 @@ const allowedOrigins = [
   PRODUCTION.FRONT_END_URL,
   DEVELOPMENT.FRONT_END_URL,
 ];
-console.log("allowedOrigins::", allowedOrigins);
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -45,7 +44,9 @@ app.use(cors({
       callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
 
