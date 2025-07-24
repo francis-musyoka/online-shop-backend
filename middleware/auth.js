@@ -4,9 +4,9 @@ const db = require('../utils/database');
 
 exports.isAuthenticated = async (req, res, next) => {
     const authHeader = req.headers['authorization'];
-    // const authToken = authHeader.split(' ')[1].replace(/^"|"$/g, '');
+    const authToken = authHeader.split(' ')[1].replace(/^"|"$/g, '');
 
-    const token = req.cookies.token;
+    const token = req.cookies.token || authToken;
 
 
     try {
@@ -45,10 +45,10 @@ exports.isAuthenticated = async (req, res, next) => {
 
 
 exports.authenticateShop = async (req, res, next) => {
-    // const authHeader = req.headers['authorization'];
-    // const authToken = authHeader.split(' ')[1].replace(/^"|"$/g, '');
+    const authHeader = req.headers['authorization'];
+    const authToken = authHeader.split(' ')[1].replace(/^"|"$/g, '');
 
-    const shopToken = req.cookies.shopToken
+    const shopToken = req.cookies.shopToken || authToken
 
     try {
         if (!shopToken) {

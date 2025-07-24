@@ -115,7 +115,7 @@ exports.getUserProfile = (req, res) => {
     res.json({ authenticated: true, user: req.user });
 };
 
-exports.getAllUsers = async (req, res, next) => {
+exports.getAllUsers = async (_req, res, next) => {
     try {
         const users = await Customer.findAll();
         res.status(200).json({
@@ -205,7 +205,12 @@ exports.updatePassword = async (req, res, next) => {
 
 exports.logOUt = async (req, res, next) => {
     try {
-        const { token } = req.cookies
+        const authHeader = req.headers['authorization'];
+        const authToken = authHeader.split(' ')[1].replace(/^"|"$/g, '');
+
+        console.log("authToken::", authToken);
+
+        const token = req.cookies.token || authToken;
 
         if (!token) {
             return next(new ErrorResponse("Unauthorized: You must have token ", 400));

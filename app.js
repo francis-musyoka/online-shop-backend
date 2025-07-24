@@ -20,7 +20,7 @@ const shippingAddressRouter = require('./routers/shippingAddressRouters');
 const mpesaNumberRouter = require('./routers/mpesaNumberRouters');
 const mpesaTransactionRouter = require('./routers/mpesaTransactionRouters');
 const orderRouter = require('./routers/customerRoutes/orderRouter');
-const { ALLOWED_ORIGINS, IS_PRODUCTION } = require('./constants');
+const { ALLOWED_ORIGINS } = require('./constants');
 
 const app = express();
 
@@ -34,10 +34,6 @@ app.use(cookieParser())
 
 app.use(cors({
   origin: function (origin, callback) {
-    console.log("isProduction", IS_PRODUCTION);
-    console.log("origin::", origin);
-    console.log("ALLOWED_ORIGINS::>>", ALLOWED_ORIGINS);
-
     if (!origin || ALLOWED_ORIGINS.includes(origin)) {
       callback(null, true);
     } else {

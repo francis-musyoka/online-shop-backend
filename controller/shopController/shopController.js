@@ -129,8 +129,6 @@ exports.getAllShops = async (req, res, next) => {
 exports.forgotPassword = async (req, res, next) => {
     const { email } = req.body;
 
-    console.log(email);
-
     try {
         const shop = await Shop.findOne({ where: { email: email } });
 
@@ -182,7 +180,10 @@ exports.forgotPassword = async (req, res, next) => {
 
 
 exports.logOut = async (req, res, next) => {
-    const { shopToken } = req.cookies;
+    const authHeader = req.headers['authorization'];
+    const authToken = authHeader.split(' ')[1].replace(/^"|"$/g, '');
+
+    const shopToken = req.cookies.shopToken || authToken
 
     if (!shopToken) {
         return next(new ErrorResponse("Unauthorized: You must have token ", 401));
