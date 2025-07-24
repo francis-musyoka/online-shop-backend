@@ -6,7 +6,7 @@ const axios = require('axios')
 
 const db = require('./database');
 const ErrorResponse = require('./error');
-const { PRODUCTION, DEVELOPMENT } = require('../constants');
+const { IS_PRODUCTION, DOMAIN, LINK } = require('../constants');
 
 const { Wishlist, Cart, GuestCart, OrderCounter, sequelize } = db;
 
@@ -36,15 +36,14 @@ const generateForgotPasswordToken = (user) => {
         return token;
 }
 
-const domain = process.env.COOKIE_DOMAIN
-const domainHostName = domain ? new URL(domain).hostname : undefined;
 
+const domainHostName = DOMAIN ? new URL(DOMAIN).hostname : undefined;
 
 const cookieOptions = {
         httpOnly: process.env.COOKIE_HTTP_ONLY === 'true',
-        secure: process.env.COOKIE_SECURE === 'true',
-        sameSite: process.env.COOKIE_SAME_SITE,
-        domain: domainHostName,
+        secure: IS_PRODUCTION,
+        sameSite: IS_PRODUCTION ? 'None' : 'Lax',
+        domain: IS_PRODUCTION ? domainHostName : undefined
 };
 
 
@@ -58,9 +57,8 @@ const generateResetToken = async (user) => {
         user.linkExpiresIn = linkExpiration;
         await user.save();
 
-
         // Send the raw token to the user in the link
-        return `${PRODUCTION.FRONT_END_URL ?? DEVELOPMENT.FRONT_END_URL}/reset-password/${token}`
+        return `${LINK}/reset-password/${token}`
 };
 
 const generateResetShopToken = async (shop) => {
@@ -76,7 +74,7 @@ const generateResetShopToken = async (shop) => {
 
         // Send the raw token to the user in the link
 
-        return `$${PRODUCTION.FRONT_END_URL ?? DEVELOPMENT.FRONT_END_URL}/sell/reset-password/${token}`
+        return `${LINK}/sell/reset-password/${token}`
 };
 
 const generateLogInShopToken = async (shop) => {
@@ -123,8 +121,6 @@ const mergeGuestCart = async (guestId, customerId, transaction, next) => {
                 const guestCartProduct = await GuestCart.findAll({ where: { guestId } });
 
                 if (guestCartProduct.length === 0) return; // No items to merge
-
-                console.log('.............GOSH!');
 
                 // Fetch user's cart items
                 const userCartItems = await Cart.findAll({ where: { customerId } });

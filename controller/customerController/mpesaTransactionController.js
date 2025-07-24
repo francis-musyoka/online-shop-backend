@@ -3,6 +3,7 @@ const db = require("../../utils/database");
 const ErrorResponse = require('../../utils/error');
 const { createId, generateStkPushPassword, getStkPushAccessToken } = require('../../utils');
 const { default: axios } = require("axios");
+const { PRODUCTION_BACK_END_URL } = require("../../constants");
 
 const { MpesaTransaction } = db;
 
@@ -29,7 +30,7 @@ exports.stkPush = async (req, res, next) => {
             PartyA: phoneNumber,
             PartyB: process.env.MPESA_SHORTCODE,
             PhoneNumber: phoneNumber,
-            CallBackURL: `${process.env.PRODUCTION_BACK_END_URL}/mpesa/callback`, // This is a placeholder
+            CallBackURL: `${PRODUCTION_BACK_END_URL}/mpesa/callback`, // This is a placeholder
             AccountReference: 'CompanyXLTD',
             TransactionDesc: 'Payment for goods',
         };

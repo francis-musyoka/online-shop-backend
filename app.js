@@ -20,7 +20,7 @@ const shippingAddressRouter = require('./routers/shippingAddressRouters');
 const mpesaNumberRouter = require('./routers/mpesaNumberRouters');
 const mpesaTransactionRouter = require('./routers/mpesaTransactionRouters');
 const orderRouter = require('./routers/customerRoutes/orderRouter');
-const { PRODUCTION, DEVELOPMENT } = require('./constants');
+const { ALLOWED_ORIGINS } = require('./constants');
 
 const app = express();
 
@@ -31,14 +31,9 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(cookieParser())
 
 
-const allowedOrigins = [
-  PRODUCTION.FRONT_END_URL,
-  DEVELOPMENT.FRONT_END_URL,
-];
-
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin || ALLOWED_ORIGINS.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
