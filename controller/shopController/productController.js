@@ -127,7 +127,7 @@ exports.getAllProducts = async (req, res, next) => {
                 attributes: ['name']
             },
             // attributes:{exclude:['createdAt','updatedAt','shopId','categoryId']}
-            attributes: ['id', 'productName', 'image', 'price', "quantity"]
+            attributes: ['id', 'productName', 'image', 'price', "quantity", "discount", "status"]
         });
 
         res.status(200).json({
