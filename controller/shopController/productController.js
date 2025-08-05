@@ -5,7 +5,8 @@ const { createId } = require("../../utils");
 
 
 
-const { Product, Category, Shop } = db;
+const { Product, Category, Shop, Sequelize } = db;
+const { Op } = Sequelize;
 
 exports.addProduct = async (req, res, next) => {
 
@@ -141,7 +142,6 @@ exports.getAllProducts = async (req, res, next) => {
 
 exports.getSingleProduct = async (req, res, next) => {
     const { id } = req.params
-
     try {
         const productDetail = await Product.findOne({
             where: { id: id },
@@ -155,7 +155,6 @@ exports.getSingleProduct = async (req, res, next) => {
             },
             attributes: { exclude: ['createdAt', 'updatedAt', 'shopId', 'categoryId'] }
         })
-
 
         res.status(200).json({
             success: true,
@@ -188,6 +187,38 @@ exports.getCurrentProductOnEdit = async (req, res, next) => {
         })
     } catch (error) {
         next(error)
+    }
+};
+
+exports.searchProduct = async (req, res, next) => {
+    const { searchItem } = req.body;
+    console.log(req.body);
+
+    if (!searchItem) {
+        return next(new ErrorResponse('Search item is required', 400));
+    };
+
+    try {
+        const products = await Product.findAll({
+            where: {
+                productName: {
+                    [Op.iLike]: `%${searchItem}%`
+                }
+            },
+            include: {
+                model: Category,
+                attributes: ['name']
+            },
+            attributes: ['id', 'productName', 'image', 'price', "quantity", "discount", "status"]
+        });
+
+        res.status(200).json({
+            success: true,
+            products
+        });
+
+    } catch (error) {
+        next(error);
     }
 };
 
