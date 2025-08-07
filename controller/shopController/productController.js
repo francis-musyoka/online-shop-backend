@@ -122,18 +122,37 @@ exports.editProduct = async (req, res, next) => {
 
 exports.getAllProducts = async (req, res, next) => {
     try {
-        const products = await Product.findAll({
+        const { pageSize, page } = req.query;
+        const limit = parseInt(pageSize);
+        const offset = (parseInt(page) - 1) * limit;
+
+        const products = await Product.findAndCountAll({
+            limit,
+            offset,
             include: {
                 model: Category,
                 attributes: ['name']
             },
+            order: [['createdAt', 'DESC']],
             // attributes:{exclude:['createdAt','updatedAt','shopId','categoryId']}
             attributes: ['id', 'productName', 'image', 'price', "quantity", "discount", "status"]
         });
 
+        const modifiedProducts = products.rows.map(product => {
+            const productData = product.toJSON();
+            return {
+                ...productData,
+                categories: productData.categories.name,
+                image: productData.image[0]
+            };
+        });
+
         res.status(200).json({
             success: true,
-            products
+            products: modifiedProducts,
+            totalPages: Math.ceil(products.count / pageSize),
+            totalItems: products.count,
+            currentPage: parseInt(page)
         })
     } catch (error) {
         next(error)
